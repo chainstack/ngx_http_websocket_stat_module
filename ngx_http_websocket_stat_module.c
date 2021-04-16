@@ -774,6 +774,7 @@ ngx_http_websocket_request_handler(ngx_http_request_t *r)
 static ngx_int_t
 ngx_http_websocket_stat_init(ngx_conf_t *cf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "RELOAD");
     allocate_counters();
 
     ngx_http_next_header_filter = ngx_http_top_header_filter;
