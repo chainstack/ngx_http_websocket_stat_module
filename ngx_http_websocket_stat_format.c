@@ -134,9 +134,12 @@ estimate_size(compiled_template *template_cmpl)
 void
 _compile_template(compiled_template *template_cmpl)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "START COMPILING TEMPLATE");
 
     if (template_cmpl->variable_occurances->nelts == 0) {
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "NO VARS");
         template_cmpl->compiled_template_str = template_cmpl->template;
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, template_cmpl->compiled_template_str);
         template_cmpl->max_result_len =
             strlen(template_cmpl->compiled_template_str);
         return;
@@ -149,8 +152,9 @@ _compile_template(compiled_template *template_cmpl)
     const char *template_ptr = template_cmpl->template;
     size_t template_len = strlen(template_cmpl->template);
 
-    unsigned int i;
-    for (i = 0; i < template_cmpl->variable_occurances->nelts; i++) {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "NO VARS");
+
+    for (unsigned int i = 0; i < template_cmpl->variable_occurances->nelts; i++) {
         variable_occurance *occ =
             ((variable_occurance **)
                  template_cmpl->variable_occurances->elts)[i];
@@ -163,6 +167,8 @@ _compile_template(compiled_template *template_cmpl)
         result_ptr += occ->variable->len;
         template_ptr += occ->http_hdr ? (occ->http_hdr + HTTP_VAR_LEN)
                                       : occ->variable->name_len;
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "REPLACED VAR");
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, result_ptr);
     }
     int s = (template_len - (template_ptr - template_cmpl->template));
     memcpy(result_ptr, template_ptr, s);
