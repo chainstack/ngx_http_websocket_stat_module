@@ -135,6 +135,7 @@ void
 _compile_template(compiled_template *template_cmpl)
 {
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "START COMPILING TEMPLATE");
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, template_cmpl->template);
 
     if (template_cmpl->variable_occurances->nelts == 0) {
         ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "NO VARS");
@@ -152,7 +153,7 @@ _compile_template(compiled_template *template_cmpl)
     const char *template_ptr = template_cmpl->template;
     size_t template_len = strlen(template_cmpl->template);
 
-    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "NO VARS");
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "START REPLACING VARS");
 
     for (unsigned int i = 0; i < template_cmpl->variable_occurances->nelts; i++) {
         variable_occurance *occ =
