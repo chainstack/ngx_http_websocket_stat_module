@@ -191,6 +191,7 @@ apply_template(compiled_template *template_cmpl, ngx_http_request_t *r,
                void *data)
 {
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "TEMPLATING 1");
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, template_cmpl->compiled_template_str);
     char *result = malloc(strlen(template_cmpl->compiled_template_str) + 1);
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "MEM IS ALLOCATED");
     strcpy(result, template_cmpl->compiled_template_str);
