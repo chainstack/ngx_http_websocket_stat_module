@@ -38,7 +38,7 @@ Here is a list of variables you can use in log format string:
 
  * $ws_opcode - websocket packet opcode. Look into https://tools.ietf.org/html/rfc6455 Section 5.2, Base Framing Protocol.
  * $ws_payload_size - Size of the WS frame without protocol specific data. Only data that been sent or received by the client
- * $ws_message_size - Size of the WS message size without protocol specific data. Only data that been sent or received by the client
+ * $ws_message_size - Size of the WS message without protocol specific data. Only data that been sent or received by the client
  * $ws_packet_source - Could be "client" if packet has been sent by the user or "upstream" if it has been received from the server
  * $ws_conn_age - Number of seconds connection is alive
  * $time_local - Nginx local time, date and timezone

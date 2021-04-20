@@ -95,8 +95,8 @@ typedef struct ngx_http_websocket_srv_conf_s {
     ngx_flag_t enabled;
     compiled_template *log_template;
     compiled_template *log_message_template;
-    compiled_template *log_close_template;
     compiled_template *log_open_template;
+    compiled_template *log_close_template;
     ngx_log_t *ws_log;
 } ngx_http_websocket_srv_conf_t;
 
@@ -522,6 +522,7 @@ ngx_http_websocket_log_enabled(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     return NGX_CONF_OK;
 }
+
 static char *
 ngx_http_websocket_log_format(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {

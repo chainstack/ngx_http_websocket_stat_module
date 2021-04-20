@@ -17,7 +17,7 @@ typedef enum { CONTINUATION, TEXT, BINARY, CLOSE = 8, PING, PONG } frame_type;
 typedef struct {
     ngx_int_t current_message_size;
 
-    // private fields representing current parcing stage
+    // private fields representing current parsing stage
     ngx_int_t bytes_consumed;
     packet_reading_stage stage;
     char payload_masked : 1;
