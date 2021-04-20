@@ -164,8 +164,7 @@ ws_do_log(compiled_template *template, ngx_http_request_t *r, void *ctx)
 {
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     
-    if (!srvcf->enabled || !template) return;
-    if (!template->compiled_template_str) return;
+    if (!srvcf->enabled || !template || !template->compiled_template_str) return;
     char *log_line = apply_template(template, r, ctx);
     if (!log_line) return;
     ngx_write_fd(srvcf->ws_log->file->fd, log_line, strlen(log_line));
@@ -333,10 +332,9 @@ const char *
 ws_packet_type(ngx_http_request_t *r, void *data)
 {
     template_ctx_s *ctx = data;
-    ngx_frame_counter_t *frame_cntr = &(ctx->ws_ctx->frame_counter);
-    if (!ctx || !frame_cntr)
+    if (!ctx || !ctx->ws_ctx)
         return UNKNOWN_VAR;
-    sprintf(buff, "%d", frame_cntr->current_frame_type);
+    sprintf(buff, "%d", ctx->ws_ctx->frame_counter.current_frame_type);
     return buff;
 }
 
@@ -344,10 +342,9 @@ const char *
 ws_packet_size(ngx_http_request_t *r, void *data)
 {
     template_ctx_s *ctx = data;
-    ngx_frame_counter_t *frame_cntr = &ctx->ws_ctx->frame_counter;
-    if (!ctx || !frame_cntr)
+    if (!ctx || !ctx->ws_ctx)
         return UNKNOWN_VAR;
-    sprintf(buff, "%lu", frame_cntr->current_payload_size);
+    sprintf(buff, "%lu", ctx->ws_ctx->frame_counter.current_payload_size);
     return (char *)buff;
 }
 
@@ -355,10 +352,9 @@ const char *
 ws_message_size(ngx_http_request_t *r, void *data)
 {
     template_ctx_s *ctx = data;
-    ngx_frame_counter_t *frame_cntr = &ctx->ws_ctx->frame_counter;
-    if (!ctx || !frame_cntr)
+    if (!ctx || !ctx->ws_ctx)
         return UNKNOWN_VAR;
-    sprintf(buff, "%lu", frame_cntr->current_message_size);
+    sprintf(buff, "%lu", ctx->ws_ctx->frame_counter.current_message_size);
     return (char *)buff;
 }
 
@@ -428,9 +424,6 @@ request_id(ngx_http_request_t *r, void *data)
 const char *
 upstream_addr(ngx_http_request_t *r, void *data)
 {
-    template_ctx_s *ctx = data;
-    if (!ctx || !ctx->ws_ctx)
-        return UNKNOWN_VAR;
     if (r->upstream_states == NULL || r->upstream_states->nelts == 0)
         return UNKNOWN_VAR;
     ngx_http_upstream_state_t *state;
@@ -601,7 +594,7 @@ ngx_http_websocket_stat_create_srv_conf(ngx_conf_t *cf)
     ngx_http_websocket_srv_conf_t *srvcf;
 
     srvcf = ngx_pcalloc(cf->pool, sizeof(ngx_http_websocket_srv_conf_t));
-    if (srvcf == NULL) {
+    if (!srvcf) {
         return NULL;
     }
 
@@ -634,13 +627,10 @@ ngx_http_websocket_stat_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child
 
     if (conf->enabled && !conf->ws_log) {
         init_ws_log_file(cf, conf, &cf->cycle->error_log);
+
+        if (!conf->ws_log || !conf->ws_log->file)
+            return NGX_CONF_ERROR;
     }
-
-    if (conf->enabled && !conf->ws_log)
-        return NGX_CONF_ERROR;
-
-    if (conf->enabled && !conf->ws_log->file)
-        return NGX_CONF_ERROR;
 
     return NGX_CONF_OK;
 }
