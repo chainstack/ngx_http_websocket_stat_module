@@ -38,7 +38,7 @@ frame_counter_process_message(u_char **buffer, ssize_t *size,
     while (*size > 0) {
         switch (frame_counter->stage) {
         case HEADER:
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strcat(__func__, "HEADER"));
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "HEADER");
             frame_counter->current_frame_type = **buffer & 0x0f;
             frame_counter->fragment_final = **buffer >> 7;
             if (frame_counter->current_frame_type != CONTINUATION) {
@@ -51,7 +51,7 @@ frame_counter_process_message(u_char **buffer, ssize_t *size,
                 frame_counter->current_payload_size = 0;
             break;
         case PAYLOAD_LEN:
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strcat(__func__, "PAYLOAD_LEN"));
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "PAYLOAD_LEN");
             frame_counter->payload_masked = **buffer >> 7;
             u_char len = **buffer & 0x7f;
             move_buffer(buffer, size, 1);
@@ -77,7 +77,7 @@ frame_counter_process_message(u_char **buffer, ssize_t *size,
             break;
         case PAYLOAD_LEN_LARGE:
         case PAYLOAD_LEN_HUGE: {
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strcat(__func__, "PAYLOAD_LEN_HUGE"));
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "PAYLOAD_LEN_HUGE");
             frame_counter->bytes_consumed++;
             frame_counter->current_payload_size <<= 8;
             frame_counter->current_payload_size |= **buffer;
@@ -91,7 +91,7 @@ frame_counter_process_message(u_char **buffer, ssize_t *size,
             break;
         }
         case MASK:
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strcat(__func__, "MASK"));
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "MASK");
             assert(frame_counter->payload_masked);
             move_buffer(buffer, size, 1);
             frame_counter->bytes_consumed++;
@@ -105,7 +105,7 @@ frame_counter_process_message(u_char **buffer, ssize_t *size,
             }
             break;
         case PAYLOAD:
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strcat(__func__, "PAYLOAD"));
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "PAYLOAD");
             if (*size >= (u_int)(frame_counter->current_payload_size -
                                  frame_counter->bytes_consumed)) {
                 move_buffer(buffer, size,
@@ -125,7 +125,7 @@ frame_counter_process_message(u_char **buffer, ssize_t *size,
             }
             break;
         default:
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strcat(__func__, "default"));
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "default");
             ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Unknown stage");
             move_buffer(buffer, size, 1);
         }
