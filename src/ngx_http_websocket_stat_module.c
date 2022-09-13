@@ -110,8 +110,8 @@ static ngx_http_output_header_filter_pt ngx_http_next_header_filter;
 void
 ws_do_log(compiled_template *template, ngx_http_request_t *r, void *ctx)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
-    
     if (!srvcf->enabled || !template || !template->compiled_template_str) return;
     char *log_line = apply_template(template, r, ctx);
     if (!log_line) return;
@@ -123,6 +123,7 @@ ws_do_log(compiled_template *template, ngx_http_request_t *r, void *ctx)
 static int
 check_ws_age(time_t conn_start_time, ngx_http_request_t *r)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     if (srvcf->max_ws_age > 0 &&
         ngx_time() - conn_start_time >= srvcf->max_ws_age) {
@@ -134,6 +135,7 @@ check_ws_age(time_t conn_start_time, ngx_http_request_t *r)
 
 static compiled_template *
 get_ws_log_template(template_ctx_s *ctx, ngx_http_websocket_srv_conf_t *srvcf) {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_stat_ctx *ws_ctx = ctx->ws_ctx;
 
     if (srvcf->log_template) {
@@ -148,6 +150,7 @@ get_ws_log_template(template_ctx_s *ctx, ngx_http_websocket_srv_conf_t *srvcf) {
 ssize_t
 my_send(ngx_connection_t *c, u_char *buf, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_request_t *r = c->data;
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     ngx_http_websocket_stat_request_ctx *request_ctx = ngx_http_get_module_ctx(r, ngx_http_websocket_stat_module);
@@ -181,6 +184,7 @@ my_send(ngx_connection_t *c, u_char *buf, size_t size)
 ssize_t
 my_recv(ngx_connection_t *c, u_char *buf, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_request_t *r = c->data;
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     ngx_http_websocket_stat_request_ctx *request_ctx = ngx_http_get_module_ctx(r, ngx_http_websocket_stat_module);
@@ -211,12 +215,14 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
 static ngx_int_t
 ngx_http_websocket_stat_header_filter(ngx_http_request_t *r)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     return ngx_http_next_header_filter(r);
 }
 
 static ngx_int_t
 ngx_http_websocket_stat_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     if (!r->upstream)
         return ngx_http_next_body_filter(r, in);
 
@@ -256,7 +262,8 @@ ngx_http_websocket_stat_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
 void
 ws_packet_type(ngx_http_request_t *r, void *data, char* buff, size_t size)
-{
+{  
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     template_ctx_s *ctx = data;
     if (!ctx || !ctx->ws_ctx) {
         snprintf(buff, size, UNKNOWN_VAR);
@@ -268,6 +275,7 @@ ws_packet_type(ngx_http_request_t *r, void *data, char* buff, size_t size)
 void
 ws_packet_size(ngx_http_request_t *r, void *data, char* buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     template_ctx_s *ctx = data;
     if (!ctx || !ctx->ws_ctx) {
         snprintf(buff, size, UNKNOWN_VAR);
@@ -279,6 +287,7 @@ ws_packet_size(ngx_http_request_t *r, void *data, char* buff, size_t size)
 void
 ws_message_size(ngx_http_request_t *r, void *data, char* buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     template_ctx_s *ctx = data;
     if (!ctx || !ctx->ws_ctx) {
         snprintf(buff, size, UNKNOWN_VAR);
@@ -290,6 +299,7 @@ ws_message_size(ngx_http_request_t *r, void *data, char* buff, size_t size)
 void
 ws_packet_source(ngx_http_request_t *r, void *data, char *buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     template_ctx_s *ctx = data;
     if (!ctx) {
         snprintf(buff, size, UNKNOWN_VAR);
@@ -303,6 +313,7 @@ ws_packet_source(ngx_http_request_t *r, void *data, char *buff, size_t size)
 void
 get_core_var(ngx_http_request_t *r, const char *variable, char *buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_int_t key = 0;
     ngx_http_variable_value_t *vv;
     ngx_str_t var;
@@ -320,6 +331,7 @@ get_core_var(ngx_http_request_t *r, const char *variable, char *buff, size_t siz
 void
 ws_connection_age(ngx_http_request_t *r, void *data, char *buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     template_ctx_s *ctx = data;
     if (!ctx || !ctx->ws_ctx) {
         snprintf(buff, size, UNKNOWN_VAR);
@@ -331,18 +343,21 @@ ws_connection_age(ngx_http_request_t *r, void *data, char *buff, size_t size)
 void
 local_time(ngx_http_request_t *r, void *data, char *buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     snprintf(buff, size, (char*)ngx_cached_http_time.data);
 }
 
 void
 remote_ip(ngx_http_request_t *r, void *data, char *buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     snprintf(buff, size, (char*)r->connection->addr_text.data);
 }
 
 void
 upstream_addr(ngx_http_request_t *r, void *data, char *buff, size_t size)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     if (!r->upstream_states || r->upstream_states->nelts == 0) {
         snprintf(buff, size, UNKNOWN_VAR);
     } else {
@@ -388,6 +403,7 @@ const template_variable variables[] = {
 static char *
 ngx_http_websocket_max_conn_age(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf = conf;
     ngx_str_t *args = cf->args->elts;
 
@@ -410,6 +426,7 @@ ngx_http_websocket_max_conn_age(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 static char *
 ngx_http_websocket_log_enabled(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf = conf;
     ngx_str_t *args = cf->args->elts;
 
@@ -428,6 +445,7 @@ ngx_http_websocket_log_enabled(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 static char *
 ngx_http_websocket_log_format(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf = conf;    
     ngx_str_t *args = cf->args->elts;
     if (cf->args->nelts != 2 && cf->args->nelts != 3) {
@@ -464,6 +482,7 @@ ngx_http_websocket_log_format(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 }
 
 static void init_ws_log_file(ngx_conf_t *cf, ngx_http_websocket_srv_conf_t *srvcf, ngx_str_t *file_path) {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     srvcf->ws_log = ngx_pcalloc(cf->pool, sizeof(ngx_log_t));
 
     if (!srvcf->ws_log)
@@ -476,6 +495,7 @@ static void init_ws_log_file(ngx_conf_t *cf, ngx_http_websocket_srv_conf_t *srvc
 static char *
 ngx_http_websocket_log_file(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf = conf;    
     ngx_str_t *args = cf->args->elts;
 
@@ -495,6 +515,7 @@ ngx_http_websocket_log_file(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 static void *
 ngx_http_websocket_stat_create_srv_conf(ngx_conf_t *cf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *srvcf;
 
     srvcf = ngx_pcalloc(cf->pool, sizeof(ngx_http_websocket_srv_conf_t));
@@ -517,6 +538,7 @@ ngx_http_websocket_stat_create_srv_conf(ngx_conf_t *cf)
 static char *
 ngx_http_websocket_stat_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_websocket_srv_conf_t *prev = parent;
     ngx_http_websocket_srv_conf_t *conf = child;
 
@@ -543,6 +565,8 @@ static void
 send_close_packet(ngx_connection_t *connection, int status, const char *reason)
 {
     // send close packet
+
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     char cbuf[256];
     memset(cbuf, 0, sizeof(cbuf));
     cbuf[0] = 0x88; // Fin, Close : 1000 1000
@@ -562,6 +586,7 @@ unsigned char hash[SHA_DIGEST_LENGTH];
 static ngx_int_t
 ngx_http_websocket_stat_configure(ngx_conf_t *cf)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_http_next_header_filter = ngx_http_top_header_filter;
     ngx_http_top_header_filter = ngx_http_websocket_stat_header_filter;
 

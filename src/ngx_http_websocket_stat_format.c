@@ -30,6 +30,7 @@ typedef struct {
 static int
 compare_occurance(const void *_first, const void *_second)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     const variable_occurance **first = (const variable_occurance **)_first;
     const variable_occurance **second = (const variable_occurance **)_second;
     assert((*first)->orig_pos != (*second)->orig_pos);
@@ -57,6 +58,7 @@ void
 insert_occurance(const template_variable *var, size_t pos,
                  compiled_template *template_cmlp, int http_hdr_len)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     variable_occurance **oc =
         ngx_array_push(template_cmlp->variable_occurances);
     *oc = ngx_palloc(template_cmlp->pool, sizeof(variable_occurance));
@@ -68,6 +70,7 @@ insert_occurance(const template_variable *var, size_t pos,
 static void
 locate_http_variables(compiled_template *template_cmlp)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     const char *occurance = template_cmlp->template;
     while (1) {
         occurance = strstr(occurance, HTTP_VAR);
@@ -87,6 +90,7 @@ locate_http_variables(compiled_template *template_cmlp)
 static void
 find_variables(const char *template, compiled_template *template_cmlp)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     int i = 0;
     const template_variable *variables = template_cmlp->variables;
     locate_http_variables(template_cmlp);
@@ -116,6 +120,7 @@ find_variables(const char *template, compiled_template *template_cmlp)
 size_t
 estimate_size(compiled_template *template_cmpl)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     size_t orig_size = strlen(template_cmpl->template);
     int size_dif = 0;
     unsigned int i;
@@ -135,7 +140,7 @@ estimate_size(compiled_template *template_cmpl)
 void
 _compile_template(compiled_template *template_cmpl)
 {
-
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     if (template_cmpl->variable_occurances->nelts == 0) {
         template_cmpl->compiled_template_str = template_cmpl->template;
         template_cmpl->max_result_len =
@@ -176,6 +181,7 @@ _compile_template(compiled_template *template_cmpl)
 void
 _remove_placeholder_chars(char *str)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     char *result_ptr = str;
     while (*str != '\0') {
         if (*str != PLACE_HOLDER_CHR) {
@@ -191,6 +197,7 @@ char *
 apply_template(compiled_template *template_cmpl, ngx_http_request_t *r,
                void *data)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     char *result = malloc(strlen(template_cmpl->compiled_template_str) + 1);
     strcpy(result, template_cmpl->compiled_template_str);
     unsigned int i;
@@ -219,6 +226,7 @@ apply_template(compiled_template *template_cmpl, ngx_http_request_t *r,
 int
 compare_hdr(const char *hdr, size_t hdr_len, const char *template)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     while (hdr_len) {
         if (*hdr != '-' || *template != '_')
             if (tolower(*hdr) != tolower(*template))
@@ -234,6 +242,7 @@ void
 http_header_var(ngx_http_request_t *r, void *data, char *buff, size_t size)
 {
 #ifndef TEST
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     ngx_list_part_t *part;
     ngx_table_elt_t *header;
     part = &r->headers_in.headers.part;
@@ -262,6 +271,7 @@ compiled_template *
 compile_template(char *template, const template_variable *variables,
                  ngx_pool_t *pool)
 {
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     compiled_template *templ = ngx_palloc(pool, sizeof(compiled_template));
     templ->variable_occurances =
         ngx_array_create(pool, 10, sizeof(variable_occurance *));
