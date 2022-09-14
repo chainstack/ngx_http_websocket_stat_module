@@ -499,16 +499,14 @@ static void init_ws_log_file(ngx_conf_t *cf, ngx_http_websocket_srv_conf_t *srvc
     srvcf->ws_log = ngx_pcalloc(cf->pool, sizeof(ngx_log_t));
 
     if (!srvcf->ws_log)
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Cannot allocate memory for srvcf->ws_log"); 
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Error"); 
-        int err;
-        err = errno;
-        char buffer[10];
-        sprintf(buffer, "%d", err);
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, buffer); 
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strerror(err));    
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Cannot allocate memory for srvcf->ws_log");
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __LINE__);
+        int err = ngx_errno;
+        char buffer[100];
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, ngx_strerror(err, &buffer, 99));    
         return;
-    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Memory for srvcf->ws_log is allocated");    
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Memory for srvcf->ws_log is allocated");   
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __LINE__); 
     srvcf->ws_log->log_level = NGX_LOG_NOTICE;
     srvcf->ws_log->file = ngx_conf_open_file(cf->cycle, file_path);
 }
@@ -528,6 +526,7 @@ ngx_http_websocket_log_file(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     init_ws_log_file(cf, srvcf, &args[1]);
 
     if (!srvcf->ws_log || !srvcf->ws_log->file)
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __LINE__);
         ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Error allocating memory pool");
         return NGX_CONF_ERROR;
 
@@ -542,6 +541,8 @@ ngx_http_websocket_stat_create_srv_conf(ngx_conf_t *cf)
 
     srvcf = ngx_pcalloc(cf->pool, sizeof(ngx_http_websocket_srv_conf_t));
     if (!srvcf) {
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __LINE__);
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Empty srvconfig");
         return NULL;
     }
 
