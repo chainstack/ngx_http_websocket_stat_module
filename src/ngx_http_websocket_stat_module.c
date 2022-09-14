@@ -185,10 +185,13 @@ ssize_t
 my_recv(ngx_connection_t *c, u_char *buf, size_t size)
 {
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
+    if (!c) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "c is NULL.");
     ngx_http_request_t *r = c->data;
+    if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL.");
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     ngx_http_websocket_stat_request_ctx *request_ctx = ngx_http_get_module_ctx(r, ngx_http_websocket_stat_module);
-
+    if (!srvcf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "srvcf is NULL.");
+    if (!request_ctx) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL");
     int n = orig_recv(c, buf, size);
     if (n <= 0) {
         return n;
@@ -204,7 +207,12 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
     }
 
     while (sz > 0) {
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Recv processing. size:" + sz);
         if (frame_counter_process_message(&buf, &sz, &request_ctx->recv_ctx.frame_counter)) {
+            if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL. size:"+sz);
+            if (!buf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "buf is NULL. size: "+ sz);
+            if (!request_ctx) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL. size:"+sz);
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Recv processing. size:" + sz);
             ws_do_log(get_ws_log_template(&template_ctx, srvcf), r, &template_ctx);
         }
     }
@@ -223,16 +231,21 @@ static ngx_int_t
 ngx_http_websocket_stat_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
 {
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
+    if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL.");
     if (!r->upstream)
         return ngx_http_next_body_filter(r, in);
 
     ngx_http_websocket_srv_conf_t *srvcf =
         ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
-
+    if (!srvcf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "srvcf is NULL.");
     if (!srvcf->enabled)
         return ngx_http_next_body_filter(r, in);
 
+    if (r->headers_in.upgrade) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->headers_in.upgrade");
+    if (r->upstream->upgrade) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->upstream->upgrade");
+    if (r->headers_in.connection) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->headers_in.connection");
     if (r->headers_in.upgrade) {
+        if (r->upstream->peer.connection) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->upstream->peer.connection");
         if (r->upstream->peer.connection) {
             // connection opened
             ngx_http_websocket_stat_request_ctx *ctx = ngx_pcalloc(r->pool, sizeof(ngx_http_websocket_stat_request_ctx));
