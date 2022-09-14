@@ -207,12 +207,12 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
     }
 
     while (sz > 0) {
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Recv processing. size:" + sz);
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Recv processing");
         if (frame_counter_process_message(&buf, &sz, &request_ctx->recv_ctx.frame_counter)) {
-            if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL. size:"+sz);
-            if (!buf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "buf is NULL. size: "+ sz);
-            if (!request_ctx) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL. size:"+sz);
-            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Recv processing. size:" + sz);
+            if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL");
+            if (!buf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "buf is NULL");
+            if (!request_ctx) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL");
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Recv processing.");
             ws_do_log(get_ws_log_template(&template_ctx, srvcf), r, &template_ctx);
         }
     }
