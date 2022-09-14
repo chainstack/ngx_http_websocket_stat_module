@@ -499,8 +499,12 @@ static void init_ws_log_file(ngx_conf_t *cf, ngx_http_websocket_srv_conf_t *srvc
     srvcf->ws_log = ngx_pcalloc(cf->pool, sizeof(ngx_log_t));
 
     if (!srvcf->ws_log)
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Cannot allocate memory for srvcf->ws_log"); 
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Error"); 
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, errno); 
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strerror(errno));    
         return;
-
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Memory for srvcf->ws_log is allocated");    
     srvcf->ws_log->log_level = NGX_LOG_NOTICE;
     srvcf->ws_log->file = ngx_conf_open_file(cf->cycle, file_path);
 }
@@ -520,6 +524,7 @@ ngx_http_websocket_log_file(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     init_ws_log_file(cf, srvcf, &args[1]);
 
     if (!srvcf->ws_log || !srvcf->ws_log->file)
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Error allocating memory pool");
         return NGX_CONF_ERROR;
 
     return NGX_CONF_OK;
@@ -565,10 +570,14 @@ ngx_http_websocket_stat_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child
     ngx_conf_merge_ptr_value(conf->ws_log, prev->ws_log, NULL);
 
     if (conf->enabled && !conf->ws_log) {
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0,"Starting ws_log init");
         init_ws_log_file(cf, conf, &cf->cycle->error_log);
 
-        if (!conf->ws_log || !conf->ws_log->file)
+        if (!conf->ws_log || !conf->ws_log->file){
+            ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0,"Failed to init ws_log");
             return NGX_CONF_ERROR;
+        }
+
     }
 
     return NGX_CONF_OK;
