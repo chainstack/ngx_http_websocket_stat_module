@@ -520,9 +520,10 @@ ngx_http_websocket_log_file(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     
     init_ws_log_file(cf, srvcf, &args[1]);
 
-    if (!srvcf->ws_log || !srvcf->ws_log->file)
+    if (!srvcf->ws_log || !srvcf->ws_log->file) {
         ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Error allocating memory pool");
         return NGX_CONF_ERROR;
+    }
 
     return NGX_CONF_OK;
 }
@@ -571,7 +572,7 @@ ngx_http_websocket_stat_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child
         ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0,"Starting ws_log init");
         init_ws_log_file(cf, conf, &cf->cycle->error_log);
 
-        if (!conf->ws_log || !conf->ws_log->file){
+        if (!conf->ws_log || !conf->ws_log->file) {
             ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0,"Failed to init ws_log");
             return NGX_CONF_ERROR;
         }
