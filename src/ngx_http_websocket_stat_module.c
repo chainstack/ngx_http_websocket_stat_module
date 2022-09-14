@@ -186,14 +186,18 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
 {
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
     if (!c) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "c is NULL.");
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "189");
     ngx_http_request_t *r = c->data;
     if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL.");
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "193");
     ngx_http_websocket_stat_request_ctx *request_ctx = ngx_http_get_module_ctx(r, ngx_http_websocket_stat_module);
     if (!srvcf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "srvcf is NULL.");
     if (!request_ctx) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL");
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "197. size=" + size);
     int n = orig_recv(c, buf, size);
     if (n <= 0) {
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "200. n=" + n);
         return n;
     }
 
@@ -201,7 +205,7 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
     template_ctx_s template_ctx;
     template_ctx.from_client = 1;
     template_ctx.ws_ctx = &request_ctx->recv_ctx;
-
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "208");
     if (check_ws_age(request_ctx->recv_ctx.ws_conn_start_time, r) != NGX_OK) {
         return NGX_ERROR;
     }
