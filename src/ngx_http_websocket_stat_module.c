@@ -504,7 +504,8 @@ static void init_ws_log_file(ngx_conf_t *cf, ngx_http_websocket_srv_conf_t *srvc
         int err;
         err = errno;
         char buffer[10];
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, itoa(err, buffer, 10)); 
+        sprintf(buffer, "%d", err);
+        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, buffer); 
         ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, strerror(err));    
         return;
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "Memory for srvcf->ws_log is allocated");    
