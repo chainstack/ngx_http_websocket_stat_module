@@ -191,6 +191,7 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
     if (r == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL.");
     if (r->ctx == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->ctx is NULL.-------------------");
     if (r->srv_conf == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->srv_conf is NULL.-------------------");
+    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "0"+ngx_http_websocket_stat_module.ctx_index);
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "193");
     ngx_http_websocket_stat_request_ctx *request_ctx = ngx_http_get_module_ctx(r, ngx_http_websocket_stat_module);
