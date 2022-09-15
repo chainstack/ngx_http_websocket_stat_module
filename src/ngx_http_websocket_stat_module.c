@@ -185,15 +185,17 @@ ssize_t
 my_recv(ngx_connection_t *c, u_char *buf, size_t size)
 {
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, __func__);
-    if (!c) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "c is NULL.");
+    if (c == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "c is NULL.");
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "189");
     ngx_http_request_t *r = c->data;
-    if (!r) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL.");
+    if (r == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r is NULL.");
+    if (r->ctx == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->ctx is NULL.-------------------");
+    if (r->srv_conf == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "r->srv_conf is NULL.-------------------");
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "193");
     ngx_http_websocket_stat_request_ctx *request_ctx = ngx_http_get_module_ctx(r, ngx_http_websocket_stat_module);
-    if (!srvcf) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "srvcf is NULL.");
-    if (!request_ctx) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL");
+    if (srvcf == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "srvcf is NULL.");
+    if (request_ctx == NULL) ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "request_ctx is NULL");
     ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "197. size=" + size);
     int n = orig_recv(c, buf, size);
     if (n <= 0) {
