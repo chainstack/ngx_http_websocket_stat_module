@@ -192,6 +192,7 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
     if (r->srv_conf == NULL || r->ctx == NULL) {
         // Related to the bug when we calculated request right after reload and server config yet to load so it was NULL and caused crash.
         // Part r->ctx == NULL allows to prevents same problem in case module_ctx would be unloaded for some reason.
+        ngx_log_error(NGX_LOG_NOTICE, ngx_cycle->log, 0, "Websocket package was processed without billing due to issue CORE-4874.");
         return n;
     }
 
