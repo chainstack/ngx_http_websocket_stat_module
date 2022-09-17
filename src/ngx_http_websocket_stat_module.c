@@ -185,14 +185,14 @@ my_recv(ngx_connection_t *c, u_char *buf, size_t size)
 
 
     int n = orig_recv(c, buf, size);
-    ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "USERMETRICS Websocket package processing");
+    if (n <= 0) {
+        return n;
+    }
     if (r->srv_conf == NULL || r->ctx == NULL) {
         // Related to the bug when we calculated request right after reload and server config yet to load so it was NULL and caused crash.
         // Part r->ctx == NULL allows to prevents same problem in case module_ctx would be unloaded for some reason.
-        ngx_log_error(NGX_LOG_ERR, ngx_cycle->log, 0, "USERMETRICS Websocket package was processed without billing due to issue CORE-4874.");
-        return n;
-    }
-    if (n <= 0) {
+        // This message would would be not shown usually as all (or all i've seen) problematic requests had zero size
+        ngx_log_error(NGX_LOG_NOTICE, ngx_cycle->log, 0, "Websocket package was processed without billing due to issue CORE-4874.");
         return n;
     }
     ngx_http_websocket_srv_conf_t *srvcf = ngx_http_get_module_srv_conf(r, ngx_http_websocket_stat_module);
