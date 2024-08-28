@@ -1,4 +1,4 @@
-version: "3.6"
+version: "3.8"
 services:
     nginx:
         command: nginx -g "daemon off;"
@@ -9,7 +9,7 @@ services:
             - ./docker/nginx.conf:/etc/nginx/nginx.conf
             - logs:/var/log/nginx
     echo:
-        image: jmalloc/echo-server:0.3.3
+        image: jmalloc/echo-server:v0.3.7
     test_e2e:
         build:
             context: .
